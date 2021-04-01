@@ -1,26 +1,35 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import Modal from "react-modal";
 
-function App() {
+import { FormModal } from "./components/FormModal";
+import { Dashboard } from "./components/dashboard";
+import { Header } from "./components/header";
+import { GlobalStyle } from "./styles/globalStyles";
+
+Modal.setAppElement("#root");
+
+export function App() {
+  const [modalIsOpen, setModalIsModalOpen] = useState<boolean>(false);
+
+  function handleModal() {
+    setModalIsModalOpen(!modalIsOpen);
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Header onHandleModal={handleModal} />
+
+      <Modal
+        overlayClassName="react-modal-overlay"
+        className="react-modal-content"
+        isOpen={modalIsOpen}
+        onRequestClose={handleModal}
+      >
+        <FormModal onHandleCloseModal={handleModal} />
+      </Modal>
+
+      <Dashboard />
+      <GlobalStyle />
+    </>
   );
 }
-
-export default App;
