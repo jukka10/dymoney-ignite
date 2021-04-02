@@ -11,23 +11,17 @@ interface TransactionTableProps {
   type?: "outcome" | "income";
 }
 
-export const TransactionTable: React.FC<TransactionTableProps> = ({
-  title = "01",
-  value = 2000,
-  category = "job",
-  date = "20/20/2021",
-  type = "income",
-}) => {
-  const [transactions, setTransactions] = useState([]);
+export const TransactionTable: React.FC = () => {
+  const [transactions, setTransactions] = useState<TransactionTableProps[]>([]);
 
   useEffect(() => {
     async function loadTransaction() {
       const response = await api.get("transactions");
+      console.log(response.data);
       setTransactions(response.data);
     }
     loadTransaction();
   }, []);
-  const array = [1, 2];
 
   return (
     <Container>
@@ -40,13 +34,13 @@ export const TransactionTable: React.FC<TransactionTableProps> = ({
             <th>Data</th>
           </tr>
         </thead>
-        {array.map((item, index) => (
+        {transactions.map((item, index) => (
           <tbody key={index}>
             <tr>
-              <td>{title}</td>
-              <td className={type}>R$ {value}</td>
-              <td>{category}</td>
-              <td>{date}</td>
+              <td>{item.title}</td>
+              <td className={item.type}>R$ {item.value}</td>
+              <td>{item.category}</td>
+              <td>{item.date}</td>
             </tr>
           </tbody>
         ))}

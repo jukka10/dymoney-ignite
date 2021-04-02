@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { FormEvent, useState } from "react";
 
 import closeImg from "../../assets/close.svg";
 import incomeImg from "../../assets/income.svg";
 import outcomeImg from "../../assets/outcome.svg";
+import { api } from "../../services/api";
 
 import { Container, Radioutton, TransactionTypeContainer } from "./styles";
 
@@ -13,12 +14,40 @@ interface FormModalProp {
 export const FormModal: React.FC<FormModalProp> = ({ onHandleCloseModal }) => {
   const [type, setType] = useState<"deposit" | "withdraw">("deposit");
 
+  const [title, setTitle] = useState("");
+  const [amount, setAmount] = useState(0);
+  const [category, setCategory] = useState("");
+
+  async function handleCreateNewTransaction(event: FormEvent) {
+    event.preventDefault();
+
+    const data = {
+      title,
+      amount,
+      category,
+      type,
+    };
+
+    const response = await api.post("transactions", data);
+
+    //add to context
+  }
+
   return (
-    <Container>
+    <Container onSubmit={handleCreateNewTransaction}>
       <h2>NovaTransação</h2>
 
-      <input placeholder="Titulo" />
-      <input placeholder="Valor" type="number" />
+      <input
+        placeholder="Titulo"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
+      <input
+        placeholder="Valor"
+        type="number"
+        value={amount.toFixed(2)}
+        onChange={(e) => setAmount(Number(e.target.value))}
+      />
 
       <TransactionTypeContainer>
         <Radioutton
@@ -42,7 +71,11 @@ export const FormModal: React.FC<FormModalProp> = ({ onHandleCloseModal }) => {
         </Radioutton>
       </TransactionTypeContainer>
 
-      <input placeholder="Categoria" />
+      <input
+        placeholder="Categoria"
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+      />
 
       <button type="submit">Cadastrar</button>
 
