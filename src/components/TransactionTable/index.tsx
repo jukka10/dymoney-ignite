@@ -4,11 +4,12 @@ import { api } from "../../services/api";
 import { Container } from "./styles";
 
 interface TransactionTableProps {
-  title?: string;
-  value?: number;
-  category?: string;
-  date?: Date | string;
-  type?: "outcome" | "income";
+  id: string;
+  title: string;
+  amount: number;
+  category: string;
+  createdAt: string;
+  type: "deposit" | "withdraw";
 }
 
 export const TransactionTable: React.FC = () => {
@@ -16,9 +17,8 @@ export const TransactionTable: React.FC = () => {
 
   useEffect(() => {
     async function loadTransaction() {
-      const response = await api.get("transactions");
-      console.log(response.data);
-      setTransactions(response.data);
+      const { data } = await api.get("transactions");
+      setTransactions(data.transactions);
     }
     loadTransaction();
   }, []);
@@ -34,16 +34,23 @@ export const TransactionTable: React.FC = () => {
             <th>Data</th>
           </tr>
         </thead>
-        {transactions.map((item, index) => (
-          <tbody key={index}>
-            <tr>
+        <tbody>
+          {transactions.map((item) => (
+            <tr key={item.id}>
               <td>{item.title}</td>
-              <td className={item.type}>R$ {item.value}</td>
+              <td className={item.type}>
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(item.amount)}
+              </td>
               <td>{item.category}</td>
-              <td>{item.date}</td>
+              <td>
+                {new Intl.DateTimeFormat("pt-BR").format(new Date(item.amount))}
+              </td>
             </tr>
-          </tbody>
-        ))}
+          ))}
+        </tbody>
       </table>
     </Container>
   );
