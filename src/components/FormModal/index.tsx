@@ -1,9 +1,10 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useContext, useState } from "react";
+
+import { TransactionContext } from "../../contexts/transactionContext";
 
 import closeImg from "../../assets/close.svg";
 import incomeImg from "../../assets/income.svg";
 import outcomeImg from "../../assets/outcome.svg";
-import { api } from "../../services/api";
 
 import { Container, Radioutton, TransactionTypeContainer } from "./styles";
 
@@ -12,8 +13,9 @@ interface FormModalProp {
 }
 
 export const FormModal: React.FC<FormModalProp> = ({ onHandleCloseModal }) => {
-  const [type, setType] = useState<"deposit" | "withdraw">("deposit");
+  const { createTransaction } = useContext(TransactionContext);
 
+  const [type, setType] = useState<"deposit" | "withdraw">("deposit");
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState(0);
   const [category, setCategory] = useState("");
@@ -28,9 +30,7 @@ export const FormModal: React.FC<FormModalProp> = ({ onHandleCloseModal }) => {
       type,
     };
 
-    const response = await api.post("transactions", data);
-
-    //add to context
+    createTransaction(data);
   }
 
   return (

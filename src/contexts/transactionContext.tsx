@@ -10,7 +10,16 @@ interface TransactionProps {
   type: "deposit" | "withdraw";
 }
 
-export const TransactionContext = createContext<TransactionProps[]>([]);
+type TransactionInput = Omit<TransactionProps, "id" | "createdAt">;
+
+interface TransactionsContextData {
+  transactions: TransactionProps[];
+  createTransaction: (transaction: TransactionInput) => void;
+}
+
+export const TransactionContext = createContext<TransactionsContextData>(
+  {} as TransactionsContextData
+);
 
 export const TransactionProvider: React.FC = ({ children }) => {
   const [transactions, setTransactions] = useState<TransactionProps[]>([]);
@@ -23,8 +32,14 @@ export const TransactionProvider: React.FC = ({ children }) => {
     loadTransaction();
   }, []);
 
+  async function createTransaction(transaction: TransactionInput) {
+    const { data } = await api.post("transactions", transaction);
+
+    setTransactions([transactions, ...data.transaction]);
+  }
+
   return (
-    <TransactionContext.Provider value={transactions}>
+    <TransactionContext.Provider value={{ transactions, createTransaction }}>
       {children}
     </TransactionContext.Provider>
   );
