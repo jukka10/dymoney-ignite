@@ -1,6 +1,6 @@
-import React, { useContext } from "react";
+import React from "react";
 
-import { TransactionContext } from "../../contexts/transactionContext";
+import { useTransactions } from "../../contexts/useTransactions";
 
 import incomeImg from "../../assets/income.svg";
 import outcomeImg from "../../assets/outcome.svg";
@@ -9,7 +9,25 @@ import totalImg from "../../assets/total.svg";
 import { Container } from "./styles";
 
 export const Summary: React.FC = () => {
-  const { transactions } = useContext(TransactionContext);
+  const { transactions } = useTransactions();
+
+  const summary = transactions.reduce(
+    (acc, transaction) => {
+      if (transaction.type === "deposit") {
+        acc.deposits += transaction.amount;
+        acc.total += acc.deposits;
+      } else if (transaction.type === "withdraw") {
+        acc.withdraws += transaction.amount;
+        acc.total -= transaction.amount;
+      }
+      return acc;
+    },
+    {
+      deposits: 0,
+      withdraws: 0,
+      total: 0,
+    }
+  );
 
   return (
     <Container>
@@ -18,7 +36,12 @@ export const Summary: React.FC = () => {
           <p>Entradas</p>
           <img src={incomeImg} alt="Entradas" />
         </header>
-        <strong>R$2000,00</strong>
+        <strong>
+          {new Intl.NumberFormat("pt-br", {
+            style: "currency",
+            currency: "brl",
+          }).format(summary.deposits)}
+        </strong>
       </div>
 
       <div>
@@ -26,7 +49,13 @@ export const Summary: React.FC = () => {
           <p>Saídas</p>
           <img src={outcomeImg} alt="Saídas" />
         </header>
-        <strong>-R$500,00</strong>
+        <strong>
+          -
+          {new Intl.NumberFormat("pt-br", {
+            style: "currency",
+            currency: "brl",
+          }).format(summary.withdraws)}
+        </strong>
       </div>
 
       <div className="total">
@@ -34,7 +63,12 @@ export const Summary: React.FC = () => {
           <p>Total</p>
           <img src={totalImg} alt="Total" />
         </header>
-        <strong>R$1500,00</strong>
+        <strong>
+          {new Intl.NumberFormat("pt-br", {
+            style: "currency",
+            currency: "brl",
+          }).format(summary.total)}
+        </strong>
       </div>
     </Container>
   );

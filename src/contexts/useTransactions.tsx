@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { api } from "../services/api";
 
 interface TransactionProps {
@@ -14,10 +14,10 @@ type TransactionInput = Omit<TransactionProps, "id" | "createdAt">;
 
 interface TransactionsContextData {
   transactions: TransactionProps[];
-  createTransaction: (transaction: TransactionInput) => void;
+  createTransaction: (transaction: TransactionInput) => Promise<void>;
 }
 
-export const TransactionContext = createContext<TransactionsContextData>(
+const TransactionContext = createContext<TransactionsContextData>(
   {} as TransactionsContextData
 );
 
@@ -32,10 +32,15 @@ export const TransactionProvider: React.FC = ({ children }) => {
     loadTransaction();
   }, []);
 
-  async function createTransaction(transaction: TransactionInput) {
-    const { data } = await api.post("transactions", transaction);
+  async function createTransaction(transactionInput: TransactionInput) {
+    const response = await api.post("transactions", {
+      ...transactionInput,
+      createdAt: new Date(),
+    });
 
-    setTransactions([transactions, ...data.transaction]);
+    const { transaction } = response.data;
+
+    setTransactions([...transactions, transaction]);
   }
 
   return (
@@ -44,3 +49,13 @@ export const TransactionProvider: React.FC = ({ children }) => {
     </TransactionContext.Provider>
   );
 };
+
+export function useTransactions() {
+  const context = useContext(TransactionContext);
+
+  if (!context) {
+    throw new Error("You do not must be provider");
+  }
+
+  return context;
+}

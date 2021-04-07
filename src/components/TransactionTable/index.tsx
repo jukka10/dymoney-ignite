@@ -1,10 +1,10 @@
-import React, { useContext } from "react";
+import React from "react";
 
-import { TransactionContext } from "../../contexts/transactionContext";
+import { useTransactions } from "../../contexts/useTransactions";
 import { Container } from "./styles";
 
 export const TransactionTable: React.FC = () => {
-  const { transactions } = useContext(TransactionContext);
+  const { transactions } = useTransactions();
 
   return (
     <Container>
@@ -29,7 +29,9 @@ export const TransactionTable: React.FC = () => {
               </td>
               <td>{item.category}</td>
               <td>
-                {new Intl.DateTimeFormat("pt-BR").format(new Date(item.amount))}
+                {new Intl.DateTimeFormat("pt-BR").format(
+                  new Date(item.createdAt)
+                )}
               </td>
             </tr>
           ))}

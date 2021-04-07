@@ -5,7 +5,7 @@ import { FormModal } from "./components/FormModal";
 import { Dashboard } from "./components/dashboard";
 import { Header } from "./components/header";
 import { GlobalStyle } from "./styles/globalStyles";
-import { TransactionProvider } from "./contexts/transactionContext";
+import { TransactionProvider } from "./contexts/useTransactions";
 
 Modal.setAppElement("#root");
 

@@ -1,6 +1,6 @@
-import React, { FormEvent, useContext, useState } from "react";
+import React, { FormEvent, useState } from "react";
 
-import { TransactionContext } from "../../contexts/transactionContext";
+import { useTransactions } from "../../contexts/useTransactions";
 
 import closeImg from "../../assets/close.svg";
 import incomeImg from "../../assets/income.svg";
@@ -9,11 +9,11 @@ import outcomeImg from "../../assets/outcome.svg";
 import { Container, Radioutton, TransactionTypeContainer } from "./styles";
 
 interface FormModalProp {
-  onHandleCloseModal: React.MouseEventHandler;
+  onHandleCloseModal: () => void;
 }
 
 export const FormModal: React.FC<FormModalProp> = ({ onHandleCloseModal }) => {
-  const { createTransaction } = useContext(TransactionContext);
+  const { createTransaction } = useTransactions();
 
   const [type, setType] = useState<"deposit" | "withdraw">("deposit");
   const [title, setTitle] = useState("");
@@ -30,7 +30,12 @@ export const FormModal: React.FC<FormModalProp> = ({ onHandleCloseModal }) => {
       type,
     };
 
-    createTransaction(data);
+    await createTransaction(data);
+
+    setTitle("");
+    setAmount(0);
+    setCategory("");
+    onHandleCloseModal();
   }
 
   return (
